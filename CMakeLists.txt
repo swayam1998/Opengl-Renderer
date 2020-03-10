@@ -11,6 +11,7 @@ if(DEFINED CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_PREFIX_PATH "C:\\Qt\\5.14.1\\msvc2015_64\\")
 
 find_package(OpenGL REQUIRED) # define OPENGL_LIBRARIES
 find_package(Qt5Widgets REQUIRED)
@@ -74,12 +75,12 @@ set(QT_LIBS ${Qt5Widgets_LIBRARIES} ${Qt5OpenGL_LIBRARIES} ${Qt5Core_LIBRARIES} 
 
 set(EXT_LIBS ${QT_LIBS} ${OPENGL_LIBRARIES})
 
-add_executable(minimal_renderer
+add_executable(minimal_renderer1
                ${folder_source}
                ${folder_header}
                ${renderer_MOC_HDRS}
                )
 
-target_link_libraries(minimal_renderer ${EXT_LIBS} )
+target_link_libraries(minimal_renderer1 ${EXT_LIBS} )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/doxygen_setup.cmake)
