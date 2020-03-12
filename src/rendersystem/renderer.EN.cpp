@@ -70,7 +70,7 @@ namespace RenderSystem {
         glEnable(GL_DEPTH_TEST);
 
         // 2 - Define the drawing mode (Wires or Plain "glPolygonMode()")
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         // ...
 
         // LAB 1 / PART I: END CODE TO COMPLETE
@@ -99,9 +99,9 @@ namespace RenderSystem {
         //
         // To fill "mViewMatrix" you can use
         // "glm::lookAt()" which helps to compute the view matrix
-
+       
         mViewMatrix = glm::lookAt(
-            glm::vec3(1.0f, 0.0f, 0.0f),
+            glm::vec3(1.0f, 1.0f, 0.30f),
             glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -362,13 +362,15 @@ namespace RenderSystem {
         //          - 'fovy' = angle in radian, field of view according the y axis
         //          - 'aspect' = window_width/window_height ( don't forget to cast to floats!)
 
-        glm::mat4 projectionMatrix = glm::perspective(glm::radians(150.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+        glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
         //    2.2 - Define the new view matrix merging 'this->mViewMatrix' and 'modelMatrix' together
 
         glm::mat4 viewMatrix = this->mViewMatrix * modelMatrix;
 
         //    2.3 - Compute the matrix to transform normals.
+
+        glm::mat3 normalMatrix(glm::transpose(glm::inverse(modelMatrix)));
 
         //    2.4 - Compute the final matrix 'MVP' (acronyme for "Model View Projection")
         //          MVP transform a vertex in local coordinates to a vertex in image coordinates
@@ -380,7 +382,7 @@ namespace RenderSystem {
         //          tell OpenGl which one to use with (glUseProgram()).
         //          Set the current shader to be used to the one you created in "this->initShaders()"
 
-        glAssert(glUseProgram(this->mProgram));
+        glAssert(glUseProgram(mProgram));
 
         //    3.2 - Set values that are constant per object ('uniform variable' of the shader "../shaders/**.glsl"):
         //          (take a look at the shader's source code)
@@ -391,10 +393,31 @@ namespace RenderSystem {
         //          Note: You will need to convert glm matrices to a pointer with:
         //          'float* ptr = glm::value_ptr(ma_matrice)'
 
-        float* ptr = glm::value_ptr(MVP);
-        GLuint MatrixID = glGetUniformLocation(this->mProgram, "MVP");
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, ptr);
+        GLuint MatrixID = glGetUniformLocation(mProgram, "MVP");
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, glm::value_ptr(MVP));
 
+        GLuint normalMat = glGetUniformLocation(mProgram, "normalMatrix");
+        glUniformMatrix4fv(normalMat, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+        // Color and Lighting 
+
+        glm::vec3 lightPos(1.0f, 0.0f, 0.0f);
+        GLuint lightPos1 = glGetUniformLocation(mProgram, "lightPos");
+        glUniform3fv(lightPos1, 1, glm::value_ptr(lightPos));
+        
+        glm::vec3 viewPos(0.50f, 0.50f, 0.0f);
+        GLuint viewPos1 = glGetUniformLocation(mProgram, "viewPos");
+        glUniform3fv(viewPos1, 1, glm::value_ptr(viewPos));
+
+        glm::vec3 objColor(0.3f, 0.5f, 0.8f);
+        GLuint objColor1 = glGetUniformLocation(mProgram, "objectColor");
+        glUniform3fv(objColor1, 1, glm::value_ptr(objColor));
+
+        glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+        GLuint lightColor1 = glGetUniformLocation(mProgram, "lightColor");
+        glUniform3fv(lightColor1, 1, glm::value_ptr(lightColor));
+
+        
 
         // LAB 1 / PART I:END CODE TO COMPLETE
         // #########################################################################
