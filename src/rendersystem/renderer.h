@@ -66,6 +66,46 @@ struct MouseEvent {
 
 // -----------------------------------------------------------------------------
 
+
+//Camera for movement
+
+class MyGLCamera {
+public:
+
+    struct cameraDir {
+        float camX, camY, camZ;
+
+        cameraDir(float camX, float camY, float camZ)
+            :camX(camX), camY(camY), camZ(camZ)
+        {
+        }
+    };
+    MyGLCamera()
+        :theta(0.0f),
+        radius(1.0f)
+    {
+    }
+
+    MyGLCamera(float radius, float theta)
+        : theta(theta)
+        , radius(radius)
+    {
+    }
+
+    void setTheta(float theta);
+    void setCam(float camX, float camY, float camZ);
+
+    float getTheta();
+    float getRadius();
+    cameraDir getCamDir();
+
+private:
+    float theta = 0.0f;
+    float camX, camY, camZ;
+    float radius;
+};
+
+
 /**
   * @ingroup RenderSystem
   * OpenGL renderer.
@@ -144,6 +184,9 @@ private:
 
     /// Viewing matrix for the rendering.
     glm::mat4 mViewMatrix;
+
+    /// Camera for view
+    MyGLCamera mCamera;
 
     /// An utility to draw objects easily as in the old Opengl 2.1
     GlDirectDraw* mDummyObject;

@@ -1,4 +1,4 @@
-/***************************************************************************
+  /***************************************************************************
  *   Copyright (C) 2012 by Mathias Paulin                                  *
  *   Mathias.Paulin@irit.fr                                                *
  *                                                                         *
@@ -101,7 +101,7 @@ namespace RenderSystem {
         // "glm::lookAt()" which helps to compute the view matrix
        
         mViewMatrix = glm::lookAt(
-            glm::vec3(1.0f, 1.0f, 0.30f),
+            glm::vec3(0.30f, 1.0f, 0.30f),
             glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -291,6 +291,7 @@ namespace RenderSystem {
 
     //------------------------------------------------------------------------------
 
+
     /// Erase shader programs
     void Renderer::clearShaders()
     {
@@ -409,7 +410,7 @@ namespace RenderSystem {
         GLuint viewPos1 = glGetUniformLocation(mProgram, "viewPos");
         glUniform3fv(viewPos1, 1, glm::value_ptr(viewPos));
 
-        glm::vec3 objColor(0.3f, 0.5f, 0.8f);
+        glm::vec3 objColor(0.5f, 0.0f, 0.1f);
         GLuint objColor1 = glGetUniformLocation(mProgram, "objectColor");
         glUniform3fv(objColor1, 1, glm::value_ptr(objColor));
 
@@ -436,6 +437,26 @@ namespace RenderSystem {
 
         // LAB 1 / PART II:END CODE TO COMPLETE
         // #########################################################################
+
+        //change camera position
+
+        
+        float theta = mCamera.getTheta();
+        MyGLCamera::cameraDir camDir(sin(theta / 3.14)* mCamera.getRadius(), 
+                                     0.7f,
+                                     cos(theta / 3.14)* mCamera.getRadius());
+
+        if (theta < 360.0f)
+        {
+
+            mCamera.setCam(camDir.camX, camDir.camY, camDir.camZ);
+            theta += 0.1f;            
+        }
+        else theta = 0.0f;
+
+        
+        mCamera.setTheta(theta);        
+        mViewMatrix = glm::lookAt(glm::vec3(camDir.camX, camDir.camY, camDir.camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
     }
 
 
@@ -894,6 +915,34 @@ namespace RenderSystem {
     }
 
     // -----------------------------------------------------------------------------
+
+    void MyGLCamera::setTheta(float theta)
+    {
+        this->theta = theta;
+    }
+
+    void MyGLCamera::setCam(float camX, float camY, float camZ)
+    {
+        this->camX = camX;
+        this->camY = camY;
+        this->camZ = camZ;
+    }
+
+    float MyGLCamera::getTheta()
+    {
+        return theta;
+    }
+
+    float MyGLCamera::getRadius()
+    {
+        return radius;
+    }
+
+    MyGLCamera::cameraDir MyGLCamera::getCamDir()
+    {
+        return cameraDir(camX, camY, camZ);
+    }
+
 
     // We need to run init glew outside the cpp of QT because GLEW headers aren't
     // compatible with <QOpenGLContext>
