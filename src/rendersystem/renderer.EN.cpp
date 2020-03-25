@@ -70,7 +70,7 @@ namespace RenderSystem {
         glEnable(GL_DEPTH_TEST);
 
         // 2 - Define the drawing mode (Wires or Plain "glPolygonMode()")
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         // ...
 
         // LAB 1 / PART I: END CODE TO COMPLETE
@@ -300,9 +300,16 @@ namespace RenderSystem {
 
         // 1 - Detach shader programs ( glDetachShader() )
 
+        glAssert(glDetachShader(mProgram, mVertexShaderId));
+        glAssert(glDetachShader(mProgram, mFragmentShaderId));
+        
+
         // 2 - Clean shaders (vertex, fragment shaders) ( glDeleteShader() )
         // Note: if you don't detach shaders OpenGL might not actually delete
         // shaders upon the call of glDeleteShader() !
+
+        glAssert(glDeleteShader(mVertexShaderId));
+        glAssert(glDeleteShader(mFragmentShaderId));
 
         // 3 - delete the "program shader" itself
         // Note: only the program shader is actually necessary to draw objects.
@@ -310,8 +317,7 @@ namespace RenderSystem {
         // and producing the final program we could have delete those individual
         // shaders in initShaders().
 
-        glAssert(glDeleteShader(mVertexShaderId));
-        glAssert(glDeleteShader(mFragmentShaderId));
+        glAssert(glDeleteProgram(mProgram));
 
         // LAB 1 / PART I:END CODE TO COMPLETE
         // #########################################################################
@@ -362,11 +368,11 @@ namespace RenderSystem {
         //          - 'fovy' = angle in radian, field of view according the y axis
         //          - 'aspect' = window_width/window_height ( don't forget to cast to floats!)
 
-        glm::mat4 projectionMatrix = glm::perspective(glm::radians(150.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+        glm::mat4 projectionMatrix = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 
         //    2.2 - Define the new view matrix merging 'this->mViewMatrix' and 'modelMatrix' together
 
-        glm::mat4 viewMatrix = this->mViewMatrix * modelMatrix;
+        glm::mat4 viewMatrix = mViewMatrix * modelMatrix;
 
         //    2.3 - Compute the matrix to transform normals.
 
@@ -380,7 +386,7 @@ namespace RenderSystem {
         //          tell OpenGl which one to use with (glUseProgram()).
         //          Set the current shader to be used to the one you created in "this->initShaders()"
 
-        glAssert(glUseProgram(this->mProgram));
+        glAssert(glUseProgram(mProgram));
 
         //    3.2 - Set values that are constant per object ('uniform variable' of the shader "../shaders/**.glsl"):
         //          (take a look at the shader's source code)
@@ -392,7 +398,7 @@ namespace RenderSystem {
         //          'float* ptr = glm::value_ptr(ma_matrice)'
 
         float* ptr = glm::value_ptr(MVP);
-        GLuint MatrixID = glGetUniformLocation(this->mProgram, "MVP");
+        GLuint MatrixID = glGetUniformLocation(mProgram, "MVP");
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, ptr);
 
 
