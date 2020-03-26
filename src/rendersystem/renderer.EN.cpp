@@ -376,6 +376,8 @@ namespace RenderSystem {
 
         //    2.3 - Compute the matrix to transform normals.
 
+        glm::mat3 normalMatrix(glm::transpose(glm::inverse(viewMatrix)));
+
         //    2.4 - Compute the final matrix 'MVP' (acronyme for "Model View Projection")
         //          MVP transform a vertex in local coordinates to a vertex in image coordinates
 
@@ -397,9 +399,21 @@ namespace RenderSystem {
         //          Note: You will need to convert glm matrices to a pointer with:
         //          'float* ptr = glm::value_ptr(ma_matrice)'
 
-        float* ptr = glm::value_ptr(MVP);
-        GLuint MatrixID = glGetUniformLocation(mProgram, "MVP");
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, ptr);
+        float* ptr0 = glm::value_ptr(viewMatrix);
+        GLuint MatrixID_0 = glGetUniformLocation(mProgram, "modelViewMatrix");
+        glUniformMatrix4fv(MatrixID_0, 1, GL_FALSE, ptr0);
+
+        float* ptr1 = glm::value_ptr(projectionMatrix);
+        GLuint MatrixID_1 = glGetUniformLocation(mProgram, "projectionMatrix");
+        glUniformMatrix4fv(MatrixID_1, 1, GL_FALSE, ptr1);
+
+        float* ptr2 = glm::value_ptr(MVP);
+        GLuint MatrixID_2 = glGetUniformLocation(mProgram, "MVP");
+        glUniformMatrix4fv(MatrixID_2, 1, GL_FALSE, ptr2);
+
+        float* ptr3 = glm::value_ptr(normalMatrix);
+        GLuint MatrixID_3 = glGetUniformLocation(mProgram, "normalMatrix");
+        glUniformMatrix4fv(MatrixID_3, 1, GL_FALSE, ptr3);
 
 
         // LAB 1 / PART I:END CODE TO COMPLETE
@@ -608,7 +622,7 @@ namespace RenderSystem {
             // Les sommets des triangles étant indexés et non consécutifs (sauf cas très particulier)
             // on utilisera la fonction glDrawElements(...)
 
-            glAssert(glDrawElements(GL_TRIANGLES, mNbTriangles*sizeof(TriangleIndex), GL_UNSIGNED_INT, 0));
+            glAssert(glDrawElements(GL_TRIANGLES, 3 * mNbTriangles, GL_UNSIGNED_INT, 0));
 
             // Watch out! The "count" parameter of glDrawElements() does not define
             // the number of triangles but the actual size your index buffer.
@@ -756,16 +770,33 @@ namespace RenderSystem {
                 b = a; // HACK: Avoid unsued warning
 
                 // 1 - Retrieve xvec and yvec axis of the camera
+
+                glm::vec3 xvec(mViewMatrix[0][0], mViewMatrix[1][0], mViewMatrix[2][0]);
+                glm::vec3 yvec(mViewMatrix[0][1], mViewMatrix[1][1], mViewMatrix[2][1]);
+
                 // 2 - Modify mViewMatrix in order to rotate about dy*360.f degres around xvec
+                mViewMatrix = glm::rotate(mViewMatrix, dy * 360.f * 0.01f, xvec);
                 // 3 - Modify mViewMatrix in order to rotate about dx*360.f degres around yvec
+                mViewMatrix = glm::rotate(mViewMatrix, dx * 360.f * 0.01f, yvec);
             } break;
             case MouseEvent::RIGHT: {
                 // 1 - Compute the translation vector xvec and yvec according to the camera X and Y axis
+
+                glm::vec3 xvec = glm::vec3(mViewMatrix[0][0], mViewMatrix[1][0], mViewMatrix[2][0]) * dx;
+                glm::vec3 yvec = glm::vec3(mViewMatrix[0][1], mViewMatrix[1][1], mViewMatrix[2][1]) * -dy;
+
                 // 2 - Modify mViewMatrix to translate about xvec+yvec
+
+                mViewMatrix = glm::translate(mViewMatrix, xvec + yvec);
+
             } break;
             case MouseEvent::MIDDLE: {
                 // 1 - Compute the translation vector zvec according to the camera Z axis
+                glm::vec3 zvec(mViewMatrix[0][2], mViewMatrix[1][2], mViewMatrix[2][2]);
                 // 2 - Modify mViewMatrix to translate about zvec
+
+                mViewMatrix = glm::translate(mViewMatrix, zvec*dy);
+
             } break;
             }
 
