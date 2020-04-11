@@ -1,25 +1,40 @@
 #version 150
+const float globalColorFactor = 0.75;
 
-//FR: Données en entrée (par fragments et non par sommets)
-// Les valeurs "in" sont interpolés linéairement entre chaque sommet du triangle
+// material
+uniform vec3 materialKd;
+uniform vec3 materialKs;
+uniform float materialNs;
 
-//EN: Input values (per fragment and not per vertex)
-// "in" values are linearly interpolated between each vertices over the triangle.
-in vec3 varColor;
+// fragment
 in vec3 varNormal;
 in vec4 varTexCoord;
 
-// FR: Couleur de sortie du fragment
-// EN: Output color of the fragment
+// lumieres
+in vec3 lightDirInView[3];
+in vec3 halfVecInView[3];
+
+// material
+uniform vec3 keyLightColor;
+uniform vec3 fillLightColor;
+uniform vec3 backLightColor;
+
+// resultat
 out vec4 outColor;
 
-void main(void) {
-    outColor = vec4( normalize(varNormal), 1.0);
+// --------------------
 
-    // FR: Différentes lignes à tester et comprendre:
-	// EN: various lines to test and to be understood:
-//    outColor = vec4( varColor,1.0);
-//    outColor = varTexCoord;
-//    outColor = vec4 (1.0, 1.0, 1.0, 1.0);
+vec3 blinnPhongLighting (in vec3 kd, in vec3 ks, in float ns, in vec3 normal, in vec3 lightVector, in vec3 halfVector){
+    // Fonction à écrire par les étudiants
+	return vec3(0.0, 0.0, 0.0);
+}
+
+void main(void) {
+
+    vec3 fragColor = vec3(0.0, 0.0, 0.0);
+	// Calculer fragColor;
+
+    outColor = vec4( fragColor*globalColorFactor, 1.);
+
 }
 
