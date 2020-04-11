@@ -771,8 +771,8 @@ namespace RenderSystem {
 
                 // 1 - Retrieve xvec and yvec axis of the camera
 
-                glm::vec3 xvec(mViewMatrix[0][0], mViewMatrix[1][0], mViewMatrix[2][0]);
-                glm::vec3 yvec(mViewMatrix[0][1], mViewMatrix[1][1], mViewMatrix[2][1]);
+                glm::vec3 xvec(glm::row(mViewMatrix, 0));
+                glm::vec3 yvec(glm::row(mViewMatrix, 1));
 
                 // 2 - Modify mViewMatrix in order to rotate about dy*360.f degres around xvec
                 mViewMatrix = glm::rotate(mViewMatrix, dy * 360.f * 0.01f, xvec);
@@ -782,20 +782,20 @@ namespace RenderSystem {
             case MouseEvent::RIGHT: {
                 // 1 - Compute the translation vector xvec and yvec according to the camera X and Y axis
 
-                glm::vec3 xvec = glm::vec3(mViewMatrix[0][0], mViewMatrix[1][0], mViewMatrix[2][0]) * dx;
-                glm::vec3 yvec = glm::vec3(mViewMatrix[0][1], mViewMatrix[1][1], mViewMatrix[2][1]) * -dy;
-
+                glm::vec3 xvec(glm::row(mViewMatrix, 0) *  dx);
+                glm::vec3 yvec(glm::vec3(glm::row(mViewMatrix, 1)) * -dy);
+                glm::vec3 tvec(xvec + yvec);
                 // 2 - Modify mViewMatrix to translate about xvec+yvec
 
-                mViewMatrix = glm::translate(mViewMatrix, xvec + yvec);
+                mViewMatrix = glm::translate(mViewMatrix, tvec);
 
             } break;
             case MouseEvent::MIDDLE: {
                 // 1 - Compute the translation vector zvec according to the camera Z axis
-                glm::vec3 zvec(mViewMatrix[0][2], mViewMatrix[1][2], mViewMatrix[2][2]);
+                glm::vec3 zvec(glm::row(mViewMatrix, 2) * dy);
                 // 2 - Modify mViewMatrix to translate about zvec
 
-                mViewMatrix = glm::translate(mViewMatrix, zvec*dy);
+                mViewMatrix = glm::translate(mViewMatrix, zvec);
 
             } break;
             }
