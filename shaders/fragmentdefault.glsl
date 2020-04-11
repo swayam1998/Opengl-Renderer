@@ -29,7 +29,7 @@ vec3 blinnPhongLighting (in vec3 kd, in vec3 ks, in float ns, in vec3 normal, in
     
     float cosTheta = abs(dot(normal, lightVector));
     float cosAlpha = abs(dot(normal, halfVector));
-    vec3 colorFactor = (kd + ks*pow(cosAlpha, ns) * cosTheta);
+    vec3 colorFactor = (kd + ks*pow(cosAlpha, ns) ) * cosTheta;
     
 	return colorFactor;
 }
