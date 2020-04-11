@@ -23,7 +23,6 @@
 #include "glm/glm.hpp"
 
 #include <vector>
-class GlDirectDraw;
 
 /** @defgroup RenderSystem Simple OpenGL Rendering system
  *  Simple OpenGL 3.2 core renderer.
@@ -37,6 +36,8 @@ namespace RenderSystem {
 // =============================================================================
 
 class MyGLMesh;
+class MyGlEntity;
+class MyGLMaterial;
 
 
 /**
@@ -93,7 +94,10 @@ public:
     /// Render the scene.
     void render();
 
-    void draw_list_mesh();
+    void draw_list_mesh(const glm::mat4& localmodelViewMatrix,
+                        const glm::mat4& localprojectionMatrix,
+                        int transformationLoc[4],
+                        int materialLoc[4] );
 
     /// Handle mouse event given by the vortexEngine
     /// @return 1 if event is understood and fully managed. 0 otherwise.
@@ -137,6 +141,10 @@ private:
     /// Vector of meshes to be drawn.
     std::vector<MyGLMesh*> mMeshes;
 
+    std::vector<MyGlEntity*> mEntities;
+
+    MyGLMaterial* mDefaultMaterial;
+	
     /// OpenGl Shader Program to be used when drawing.
     int mProgram;
     int mVertexShaderId;
@@ -145,8 +153,6 @@ private:
     /// Viewing matrix for the rendering.
     glm::mat4 mViewMatrix;
 
-    /// An utility to draw objects easily as in the old Opengl 2.1
-    GlDirectDraw* mDummyObject;
 };
 
 // -----------------------------------------------------------------------------
